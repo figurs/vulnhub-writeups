@@ -1,0 +1,34 @@
+при сканировании обнаружился порт 8080, сайт с паролем
+брутфорсила через burpsuite
+    joker:hannah
+
+на сайте была cms joomla, сначала хотела через уязвимость sql, но не получилось
+    http://<joomla-page>/index.php?option=com_fields&view=fields&layout=modal&list[fullordering]=updatexml(0x23,concat(1,user()),1)
+    отображает название базы данных, как вывести дамп таблицы не знаю, а через sqlmap не получилось из-за ошибки авторизации, а --cookie тож не прошло
+
+по дефолту стоят 
+    joomla:joomla, и что вы думаете!! это подошло
+
+сначала долго пыталась загрузить shell.php в папку с картинками, не получалось
+изменила расширения файлов, которые можно загружать, все равно не прокатило
+посмотрела в инете
+    1)Configuration > Global > permission allowed all 
+    2)extensions > templates > templates
+        выбираем из доступного, я выбрала Beez3 Details and Files
+        3)редактируем любую страницу, я редачила index.php, вставляем в него shell.php и сохраняем
+        4)далее переходим на страницу /templates, дописываем что выбрали во втором пункте у меня /beez3 и файл , который мы коварно изменили index.php
+            целиком  http://<joomla-page>/templates/beez3/index.php
+
+
+ура ура мы www-data
+я долго думала как повысить привеллегии, загрузила linpeas.sh, просмотрела все папки в которых бывают всякие интересные файлы
+но оказалось все гораздо проще
+    id
+        uid=33 gid=33(www-data) groups=33(www-data),115(lxd)
+
+воспользуемя lxd чтобы повысить привеллегии
+это описыавется здесь :
+    https://www.hackingarticles.in/lxd-privilege-escalation/
+
+при поиске sqlinjection помогла статья:
+    https://programmersought.com/article/22684699314/

