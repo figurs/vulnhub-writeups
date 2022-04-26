@@ -132,5 +132,5 @@ gobuster -w /root/Downloads/common.txt -x zip,php,txt,html,bac,mp4,docx,doc,sh,b
 
 22-port_samurai
 
-1.  sudo /home/tanto/.cgi_bin/bin /tmp/\*
+1.  sudo /home/tanto/.cgi_bin/bin /tmp/\*  
     <img src=img/seppuku_1_4.jpg width='500'>
